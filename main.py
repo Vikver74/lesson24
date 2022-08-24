@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask import Flask, request
 import os.path
 from utils import get_filter, get_map, get_unique, get_sort, get_limit, get_regexp
@@ -9,8 +11,8 @@ app = Flask(__name__)
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 
 
-def apply_filter(data_path):
-    choice_func = {
+def apply_filter(data_path) -> list:
+    choice_func: dict = {
         'filter': get_filter,
         'map': get_map,
         'unique': get_unique,
@@ -27,8 +29,9 @@ def apply_filter(data_path):
             func = choice_func[request.form[item]]
             num_cmd: str = item[3]
             key_value: str = 'value' + num_cmd
-            value: str = request.form.get(key_value)
-            data: list = func(data, value)
+            value: Optional[str] = request.form.get(key_value)
+            if value:
+                data = func(data, value)
 
     return data
 
@@ -44,9 +47,6 @@ def perform_query():
 
     if not os.path.isfile(data_path):
         return f'файл {file_name} не найден', 400
-    # print(f'type   {type(data_path)}')
-    # print(data_path)
-    # print('!!!!!!!')
     return app.response_class(apply_filter(data_path), content_type="text/plain")
 
 

@@ -9,10 +9,10 @@ def get_filter(data: list, value: str) -> list:
     return list(filter(lambda line: value in line.lower(), data))
 
 
-def get_map(data: list, value: int) -> list:
+def get_map(data: list, val: Union[int, str]) -> list:
     check_type(data)
     try:
-        value = int(value)
+        value = int(val)
     except Exception:
         raise TypeError
     return list(map(lambda line: parse_string(line)[value - 1] + '\n', data))
@@ -48,6 +48,6 @@ def parse_string(string: str) -> list:
     return string.split()
 
 
-def check_type(data):
+def check_type(data) -> None:
     if not isinstance(data, list):
         raise TypeError
